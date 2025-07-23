@@ -144,6 +144,11 @@ const router = createRouter({
         AuthService.logout();
         next({ name: 'login' });
       }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/NotFoundView.vue'),
     }
   ],
 })
