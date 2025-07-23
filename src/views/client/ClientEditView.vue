@@ -3,10 +3,12 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ClientService } from '@/services/ClientService'
 import ClientForm from '@/components/form/ClientForm.vue'
+import { useToast, TYPE } from "vue-toastification"
 
 const route = useRoute()
 const router = useRouter()
 const client = ref<any>(null)
+const toast = useToast()
 
 onMounted(async () => {
   const id = Number(route.params.id)
@@ -24,9 +26,10 @@ async function handleSubmit(updated: any) {
   const service = new ClientService()
   try {
     await service.updateClient({ ...client.value, ...updated })
+    toast.success('Client modifié avec succès.')
     router.push('/clients')
   } catch (e) {
-    alert('Erreur lors de la modification du client')
+    toast.error('Erreur lors de la modification du client')
   }
 }
 

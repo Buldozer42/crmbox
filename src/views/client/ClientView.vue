@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ClientService } from '@/services/ClientService'
 import { OrderService } from '@/services/OrderService'
 import Client from '@/models/Client'
 import type Order from '@/models/Order'
+import { useToast } from "vue-toastification"
 
+const toast = useToast()
 const route = useRoute()
+const router = useRouter()
 const client = ref<Client | null>(null)
 const loading = ref(true)
 const error = ref('')
@@ -58,12 +61,15 @@ async function handleDelete() {
     const service = new ClientService()
     const success = await service.deleteClient(client.value.id)
     if (success) {
-      window.location.href = '/clients'
+      toast.success('Client supprimé avec succès.')
+      router.push("/clients");
     } else {
       error.value = 'Erreur lors de la suppression du client.'
+      toast.error('Erreur lors de la suppression du client.')
     }
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la suppression du client.'
+    toast.error(error.value)
   } finally {
     deleting.value = false
     showDeleteModal.value = false

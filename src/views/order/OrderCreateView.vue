@@ -5,12 +5,14 @@ import { OrderService } from '@/services/OrderService'
 import { ClientService } from '@/services/ClientService'
 import { ProductService } from '@/services/ProductService'
 import OrderForm from '@/components/form/OrderForm.vue'
+import { useToast, TYPE } from "vue-toastification"
 
 const router = useRouter()
 const loading = ref(false)
 const error = ref('')
 const clients = ref([])
 const products = ref([])
+const toast = useToast()
 
 onMounted(async () => {
   loading.value = true
@@ -76,9 +78,11 @@ async function handleSubmit(order: any) {
     }
     if (order.id) orderPayload.id = order.id
     await service.createOrder(orderPayload)
+    toast.success('Commande créée avec succès.')
     router.push({ name: 'order-list' })
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la création de la commande.'
+    toast.error(error.value)
   } finally {
     loading.value = false
   }

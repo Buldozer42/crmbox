@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useToast } from "vue-toastification";
 import { useRoute } from "vue-router";
 import { OrderService } from "@/services/OrderService";
 import Order from "@/models/Order";
@@ -7,6 +8,7 @@ import type Client from "@/models/Client";
 import type Product from "@/models/Product";
 import { useRouter } from "vue-router";
 
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const order = ref<Order | null>(null);
@@ -40,12 +42,15 @@ async function handleDelete() {
     const service = new OrderService();
     const success = await service.deleteOrder(order.value.id);
     if (success) {
+      toast.success("Commande supprimée avec succès.");
       router.push("/commandes");
     } else {
       error.value = "Erreur lors de la suppression de la commande.";
+      toast.error("Erreur lors de la suppression de la commande.");
     }
   } catch (e: any) {
     error.value = e.message || "Erreur lors de la suppression de la commande.";
+    toast.error(error.value);
   } finally {
     deleting.value = false;
     showDeleteModal.value = false;

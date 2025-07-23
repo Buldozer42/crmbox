@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue'
+import { ref, watch } from 'vue'
 import type Order from '@/models/Order'
 import type Client from '@/models/Client'
 import type Product from '@/models/Product'

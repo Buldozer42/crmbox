@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ProductService } from '@/services/ProductService'
 import Product from '@/models/Product'
+import { useToast, TYPE } from "vue-toastification"
 
+const toast = useToast()
 const route = useRoute()
 const product = ref<Product | null>(null)
 const loading = ref(true)
@@ -44,8 +46,10 @@ async function handleDelete() {
     const success = await service.deleteProduct(product.value.id)
     if (success) {
       window.location.href = '/produits'
+      toast.success('Produit supprimé avec succès.')
     } else {
       error.value = 'Erreur lors de la suppression du produit.'
+      toast.error('Erreur lors de la suppression du produit.')
     }
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la suppression du produit.'

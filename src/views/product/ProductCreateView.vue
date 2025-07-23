@@ -3,11 +3,12 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ProductService } from '@/services/ProductService'
 import ProductForm from '@/components/form/ProductForm.vue'
+import { useToast, TYPE } from "vue-toastification"
 
+const toast = useToast()
 const router = useRouter()
 const loading = ref(false)
 const error = ref('')
-
 
 /**
  * Traite la soumission du formulaire de création de produit.
@@ -18,9 +19,11 @@ async function handleSubmit(product: any) {
   try {
     const service = new ProductService()
     await service.createProduct(product)
+    toast.success('Produit créé avec succès.')
     router.push({ name: 'product-list' })
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la création du produit.'
+    toast.error(error.value)
   } finally {
     loading.value = false
   }

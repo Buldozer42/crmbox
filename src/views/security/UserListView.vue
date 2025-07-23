@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue'
 import Table from '@/components/Table.vue'
 import { UserService } from '@/services/UserService'
 import User from '@/models/User'
+import { useToast } from "vue-toastification"
 
+const toast = useToast()
 
 const users = ref<User[]>([])
 const loading = ref(true)
@@ -50,8 +52,10 @@ async function confirmUser(user: User) {
   try {
     await userService.updateUser({ ...user, confirmed: true })
     fetchUsers()
+    toast.success('Utilisateur confirmé avec succès.')
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la confirmation.'
+    toast.error('Erreur lors de la confirmation : ' + e.message)
   }
 }
 
@@ -71,8 +75,10 @@ async function confirmDeleteUser() {
   try {
     await userService.deleteUser(userToDelete.value.id)
     fetchUsers()
+    toast.success('Utilisateur supprimé avec succès.')
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la suppression.'
+    toast.error('Erreur lors de la suppression : ' + e.message)
   } finally {
     showDeleteModal.value = false
     userToDelete.value = null

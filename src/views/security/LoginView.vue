@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthService from '@/services/AuthService'
+import { useToast, TYPE } from "vue-toastification"
 
+const toast = useToast()
 const router = useRouter();
 
 const loginForm = ref({
@@ -54,9 +56,11 @@ const handleLogin = async () => {
         router.push('/')
     } else {
       loginError.value = 'Identifiants incorrects. Veuillez réessayer.'
+      toast.error('Identifiants incorrects. Veuillez réessayer.')
     }
   } catch (err) {
     loginError.value = 'Une erreur est survenue. Veuillez réessayer plus tard.'
+    toast.error('Erreur de connexion. Veuillez réessayer.')
     console.error('Erreur de connexion:', err)
   } finally {
     isLoginLoading.value = false
@@ -93,11 +97,14 @@ const handleRegister = async () => {
       registerSuccess.value = true;
       registerForm.value.email = '';
       registerForm.value.password = '';
+      toast.success('Inscription réussie, veuillez attendre la confirmation de votre compte avant de vous connecter.');
     } else {
       registerError.value = "Erreur d'inscription. Veuillez réessayer.";
+      toast.error('Erreur d\'inscription. Veuillez réessayer.');
     }
   } catch (e) {
-    registerError.value = 'Erreur réseau.';
+    registerError.value = 'Une erreur est survenue. Veuillez réessayer plus tard.';
+    toast.error('Erreur d\'inscription. Veuillez réessayer.');
   } finally {
     isRegisterLoading.value = false;
   }

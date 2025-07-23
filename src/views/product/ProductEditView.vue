@@ -4,12 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { ProductService } from '@/services/ProductService'
 import ProductForm from '@/components/form/ProductForm.vue'
 import Product from '@/models/Product'
+import { useToast, TYPE } from "vue-toastification"
 
 const route = useRoute()
 const router = useRouter()
 const loading = ref(true)
 const error = ref('')
 const product = ref<Product | null>(null)
+const toast = useToast()
 
 /**
  * Charge les détails du produit par ID depuis les paramètres de la route.
@@ -45,9 +47,11 @@ async function handleSubmit(updatedProduct: Product | Omit<Product, "id">) {
     const productId = (updatedProduct as Product).id ?? product.value?.id
     if (!productId) throw new Error('ID du produit manquant.')
     await service.updateProduct({ ...updatedProduct, id: productId } as Product)
+    toast.success('Produit modifié avec succès.')
     router.push({ name: 'product-detail', params: { id: productId } })
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la modification du produit.'
+    toast.error(error.value)
   } finally {
     loading.value = false
   }
