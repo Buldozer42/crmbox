@@ -11,6 +11,9 @@ const loading = ref(true)
 const error = ref('')
 const product = ref<Product | null>(null)
 
+/**
+ * Charge les détails du produit par ID depuis les paramètres de la route.
+ */
 async function fetchProduct() {
   loading.value = true
   error.value = ''
@@ -28,6 +31,11 @@ async function fetchProduct() {
   }
 }
 
+/**
+ * Traite la soumission du formulaire de modification de produit.
+ * 
+ * @param updatedProduct - Le produit mis à jour à soumettre.
+ */
 async function handleSubmit(updatedProduct: Product) {
   loading.value = true
   error.value = ''

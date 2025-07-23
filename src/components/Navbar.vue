@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import AuthService from '@/services/AuthService'
-import { title } from 'process';
 
+// Permet de savoir si l'utilisateur est authentifié
 const isAuthenticated = ref(false);
 
+// Fonction pour vérifier l'authentification de l'utilisateur
 const checkAuth = async () => {
     isAuthenticated.value = AuthService.isAuthenticated();
 };
 
+// Vérifie l'authentification lors du montage du composant
 onMounted(() => {
   checkAuth();
 });

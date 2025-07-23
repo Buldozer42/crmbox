@@ -22,11 +22,11 @@ export class OrderService {
   }
 
   /**
-   * Récupère la liste des produits.
-   * @returns Une promesse qui résout à un tableau de produits.
+   * Récupère la liste des commandes.
+   * @returns Une promesse qui résout à un tableau de commandes.
    */
   /**
-   * Récupère la liste des produits avec pagination et tri.
+   * Récupère la liste des commandes avec pagination et tri.
    * @param params - Paramètres de requête (page, itemsPerPage, order...)
    * @returns Une promesse qui résout à la structure hydra de l'API Platform.
    */
@@ -42,20 +42,20 @@ export class OrderService {
         }
       });
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des produits');
+        throw new Error('Erreur lors de la récupération des commmandes');
       }
       const data = await response.json();
       return { data };
     } catch (error) {
-      console.error('Erreur lors de la récupération des produits:', error);
+      console.error('Erreur lors de la récupération des commandes:', error);
       throw error;
     }
   }
 
   /**
-   * Récupère un produit par son ID.
-   * @param id - L'ID du produit à récupérer.
-   * @return Une promesse qui résout au produit correspondant ou undefined si non trouvé.
+   * Récupère une commande par son ID.
+   * @param id - L'ID de la commande à récupérer.
+   * @return Une promesse qui résout à la commande correspondante ou undefined si non trouvé.
    */
   public async getOrderById(id: number): Promise<Order | undefined> {
     try {
@@ -76,13 +76,12 @@ export class OrderService {
   }
 
   /**
-   * Crée un nouveau produit.
-   * @param order - Le produit à créer.
-   * @returns Une promesse qui résout au produit créé.
+   * Crée un nouveau commande.
+   * @param order - Le commande à créer.
+   * @returns Une promesse qui résout au commande créé.
    */
   public async createOrder(order: Order): Promise<Order> {
     try {
-      // Transformation du payload pour correspondre à l'API
       const payload: any = {
         date: order.date,
         state: order.state,
@@ -134,7 +133,7 @@ export class OrderService {
   }
 
   /**
-   * Met à jour un produit existant.
+   * Met à jour un commmandes existant.
    * @param order - Le produit à mettre à jour.
    * @returns Une promesse qui résout au produit mis à jour.
    */
@@ -183,6 +182,11 @@ export class OrderService {
     }
   }
 
+  /**
+   * Récupère le client associé à une commande.
+   * @param orderId - L'ID de la commande.
+   * @returns Une promesse qui résout au client associé ou undefined si non trouvé.
+   */
   public async getClientFromOrder(orderId: number): Promise<Client | undefined> {
     try {
       const response = await fetch(`${this.apiUrl}/api/orders/${orderId}`, {
@@ -194,10 +198,8 @@ export class OrderService {
         throw new Error('Erreur lors de la récupération du client de la commande');
       }
       const data = await response.json();
-      // data.client est une URL du type /api/clients/103
       const clientUrl = data.client;
       if (!clientUrl) return undefined;
-      // Récupère l'ID du client à partir de l'URL
       const match = clientUrl.match(/\/(\d+)$/);
       const clientId = match ? Number(match[1]) : undefined;
       if (!clientId) return undefined;
@@ -207,7 +209,11 @@ export class OrderService {
       throw error;
     }
   }
-
+  /**
+   * Récupère les produits commandés d'une commande.
+   * @param orderId - L'ID de la commande.
+   * @returns Une promesse qui résout à un tableau de produits commandés ou undefined si non trouvé.
+   */
   public async getOrderedProductsFromOrder(orderId: number): Promise<Array<{ product: Product, quantity: number }> | undefined> {
     try {
       const response = await fetch(`${this.apiUrl}/api/orders/${orderId}`, {
@@ -219,12 +225,10 @@ export class OrderService {
         throw new Error('Erreur lors de la récupération des produits commandés');
       }
       const data = await response.json();
-      // Supposons que data.orderedProducts est un tableau d'objets { product: '/api/products/1', quantity: 2 }
       if (!Array.isArray(data.orderedProducts)) return undefined;
 
       const results: Array<{ product: Product, quantity: number }> = [];
       for (const item of data.orderedProducts) {
-        // Récupère l'ID du produit à partir de l'URL
         const match = item.match(/\/(\d+)$/);
         const productId = match ? Number(match[1]) : undefined;
         if (!productId) continue;
@@ -240,13 +244,16 @@ export class OrderService {
     }
   }
 
+  /**
+   * Récupère les commandes avec les détails des clients et des produits commandés.
+   * @returns Une promesse qui résout à un tableau d'objets contenant la commande, le client et les produits commandés.
+   */
   public async getOrdersWithDetails(): Promise<Array<{ order: Order, client: Client | undefined, orderedProducts: Array<{ product: Product, quantity: number }> }>> {
     try {
       const { data } = await this.getOrders();
       const ordersWithDetails: Array<{ order: Order, client: Client | undefined, orderedProducts: Array<{ product: Product, quantity: number }> }> = [];
 
       for (const order of data["member"]) {
-        // Récupère le client
         let client: Client | undefined = undefined;
         if (order.client && typeof order.client === 'string') {
           const match = order.client.match(/\/(\d+)$/);
@@ -256,7 +263,6 @@ export class OrderService {
           }
         }
 
-        // Récupère les produits commandés
         const orderedProducts: Array<{ product: Product, quantity: number }> = [];
         if (Array.isArray(order.orderedProducts)) {
           for (const item of order.orderedProducts) {
@@ -283,9 +289,13 @@ export class OrderService {
     }
   }
 
+  /**
+   * Récupère une commande avec les détails du client et des produits commandés.
+   * @param id - L'ID de la commande.
+   * @returns Une promesse qui résout à un objet contenant la commande, le client et les produits commandés.
+   */
   public async getOrderByIdWithDetails(id: number): Promise<{ order: Order, client: Client | undefined, orderedProducts: Array<{ product: Product, quantity: number }> } | undefined> {
     try {
-      // Récupère la commande
       const response = await fetch(`${this.apiUrl}/api/orders/${id}`, {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`,
@@ -296,7 +306,6 @@ export class OrderService {
       }
       const order: Order = await response.json();
 
-      // Récupère le client
       let client: Client | undefined = undefined;
       if (order.client && typeof order.client === 'string') {
         const match = order.client.match(/\/(\d+)$/);
@@ -306,7 +315,6 @@ export class OrderService {
         }
       }
 
-      // Récupère les produits commandés
       const orderedProducts: Array<{ product: Product, quantity: number }> = [];
       if (Array.isArray(order.orderedProducts)) {
         for (const item of order.orderedProducts) {
@@ -334,6 +342,10 @@ export class OrderService {
     }
   }
 
+  /**
+   * Retourne le nombre total de commandes.
+   * @return Une promesse qui résout au nombre total de commandes.
+   */
   public async countOrders(): Promise<number> {
     const { data } = await this.getOrders();
     return data["totalItems"] || 0;
@@ -345,12 +357,11 @@ export class OrderService {
    */
   public async exportOrders(): Promise<Blob> {
     try {
-      const { data } = await this.getOrders({ itemsPerPage: 10000 }); // récupère toutes les commandes
+      const { data } = await this.getOrders({ itemsPerPage: 10000 });
       const orders = data["member"] || [];
       if (orders.length === 0) {
         throw new Error("Aucune commande à exporter.");
       }
-      // Colonnes à exporter selon le modèle Order
       const columns = [
         "id",
         "date",
@@ -373,17 +384,17 @@ export class OrderService {
             } catch {}
           }
         }
-        // Adresse livraison
+
         let deliveryAddress = "";
         if (order.deliveryAddress) {
           deliveryAddress = `${order.deliveryAddress.street ?? ''}, ${order.deliveryAddress.city ?? ''} ${order.deliveryAddress.postalCode ?? ''}`;
         }
-        // Adresse facturation
+
         let billingAddress = "";
         if (order.billingAddress) {
           billingAddress = `${order.billingAddress.street ?? ''}, ${order.billingAddress.city ?? ''} ${order.billingAddress.postalCode ?? ''}`;
         }
-        // Produits commandés
+
         let orderedProductsStr = "";
         if (Array.isArray(order.orderedProducts)) {
           const productsArr: string[] = [];

@@ -11,7 +11,6 @@ async function handleSubmit(client: any) {
     await service.createClient(client)
     router.push('/clients')
   } catch (e) {
-    // Gérer l'erreur (affichage, etc.)
     alert('Erreur lors de la création du client : ' + e)
   }
 }

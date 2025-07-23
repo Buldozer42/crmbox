@@ -2,20 +2,24 @@
 import { ref, watch, defineEmits, defineProps } from 'vue'
 import Product from '@/models/Product'
 
+// Définition des propriétés du composant
 const props = defineProps<{
   product?: Product | null
   loading?: boolean
 }>()
 
+// Type pour le payload de la soumission du formulaire
 const emit = defineEmits<{
   (e: 'submit', product: Omit<Product, 'id'> | Product): void
 }>()
 
+// Références pour les champs du formulaire
 const name = ref(props.product?.name || '')
 const description = ref(props.product?.description || '')
 const price = ref(props.product?.price || 0)
 const stock = ref(props.product?.stock || 0)
 
+// Watcher pour mettre à jour les champs du formulaire lorsque le produit change
 watch(() => props.product, (newProduct) => {
   name.value = newProduct?.name || ''
   description.value = newProduct?.description || ''
@@ -23,6 +27,12 @@ watch(() => props.product, (newProduct) => {
   stock.value = newProduct?.stock || 0
 })
 
+/**
+ * Gère la soumission du formulaire.
+ * Valide les champs requis et émet l'événement de soumission avec les données du produit.
+ * 
+ * @returns {void}
+ */
 function handleSubmit() {
   if (!name.value.trim() || price.value < 0 || stock.value < 0) return
   const productData = {

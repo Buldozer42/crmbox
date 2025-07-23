@@ -21,6 +21,9 @@ const columns = [
   { key: 'actions', label: 'Actions', sortable: false },
 ];
 
+/**
+ * Récupère la liste des commandes et les clients associés.
+ */
 async function fetchOrders() {
   try {
     const params = {
@@ -60,25 +63,46 @@ async function fetchOrders() {
 
 onMounted(fetchOrders);
 
+/**
+ * Gère le changement de page dans la liste des commandes.
+ * @param newPage - Le numéro de la nouvelle page à afficher.
+ */
 function handlePageChange(newPage) {
   page.value = newPage;
   fetchOrders();
 }
+
+/**
+ * Gère le changement de tri dans la liste des commandes.
+ * @param newSortBy - La nouvelle clé de tri.
+ */
 function handleSortBy(newSortBy) {
   sortBy.value = newSortBy;
   fetchOrders();
 }
+
+/**
+ * Gère le changement de direction de tri dans la liste des commandes.
+ * @param newSortDesc - La nouvelle direction de tri (ascendant ou descendant).
+ */
 function handleSortDesc(newSortDesc) {
   sortDesc.value = newSortDesc;
   fetchOrders();
 }
+
+/**
+ * Gère la recherche dans la liste des commandes.
+ * @param newSearch - La nouvelle chaîne de recherche.
+ */
 function handleSearch(newSearch) {
   search.value = newSearch;
   page.value = 1;
   fetchOrders();
 }
 
-// Fonction d'export CSV
+/**
+ * Gère l'exportation des commandes au format CSV.
+ */
 async function handleExport() {
   const service = new OrderService();
   try {

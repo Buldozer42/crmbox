@@ -8,6 +8,9 @@ interface AuthResponse {
   roles: string[];
 }
 
+/**
+ * Service d'authentification pour gérer la connexion, l'enregistrement et la déconnexion des utilisateurs.
+ */
 export class AuthService {
     private tokenKey = 'auth_token';
     private apiUrl: string;

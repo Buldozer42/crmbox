@@ -143,6 +143,11 @@ export class ProductService {
     }
   }
 
+  /**
+   * Récupère un produit commandé par son ID.
+   * @param id - L'ID du produit commandé à récupérer.
+   * @returns Une promesse qui résout à un tableau contenant le produit et la quantité, ou undefined si non trouvé.
+   */
   public async getOrderedProductById(id: number): Promise<[Product, number] | undefined> {
     try {
       const response = await fetch(`${this.apiUrl}/api/ordered_products/${id}`, {

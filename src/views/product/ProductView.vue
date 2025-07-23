@@ -12,6 +12,9 @@ const error = ref('')
 const showDeleteModal = ref(false)
 const deleting = ref(false)
 
+/**
+ * Charge les détails du produit par ID depuis les paramètres de la route.
+ */
 async function fetchProduct() {
   loading.value = true
   error.value = ''
@@ -29,6 +32,9 @@ async function fetchProduct() {
   }
 }
 
+/**
+ * Traite la suppression du produit.
+ */
 async function handleDelete() {
   if (!product.value) return
   deleting.value = true
@@ -80,7 +86,6 @@ onMounted(fetchProduct)
         <button class="btn btn-error ml-2" @click="showDeleteModal = true">Supprimer</button>
       </div>
     </div>
-    <!-- Modal de confirmation de suppression -->
     <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
         <h2 class="text-xl font-bold mb-4">Confirmer la suppression</h2>

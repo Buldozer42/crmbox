@@ -19,6 +19,9 @@ const total = ref(0);
 const showDeleteModal = ref(false);
 const deleting = ref(false);
 
+/**
+ * Calculates the total price of the ordered products.
+ */
 function calculateTotal() {
   total.value = orderedProductsDetails.value.reduce(
     (acc, prod) => acc + prod.product.price * prod.quantity,
@@ -26,6 +29,9 @@ function calculateTotal() {
   );
 }
 
+/**
+ * Gérer la suppression de la commande.
+ */
 async function handleDelete() {
   if (!order.value) return;
   deleting.value = true;
@@ -46,6 +52,9 @@ async function handleDelete() {
   }
 }
 
+/**
+ * Fetches the order details by ID from the route parameters.
+ */
 async function fetchOrder() {
   loading.value = true;
   error.value = "";

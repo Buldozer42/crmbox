@@ -50,24 +50,34 @@ const emit = defineEmits(['update:page', 'update:sortBy', 'update:sortDesc', 'up
 
 const searchValueLocal = ref(props.search)
 
-// Synchronise la valeur locale si la prop search change de l'extérieur
 watch(() => props.search, (val) => {
   searchValueLocal.value = val
 })
 
+/**
+ * Fonction pour mettre à jour la valeur de recherche
+ */
 function onSearchInput() {
   emit('update:search', searchValueLocal.value)
 }
 
 const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPage))
 
-
+/**
+ * Fonction pour changer de page
+ * @param {number} newPage - La nouvelle page à afficher
+ */
 function changePage(newPage) {
   if (newPage >= 1 && newPage <= totalPages.value) {
     emit('update:page', newPage)
   }
 }
 
+/**
+ * Fonction pour trier les colonnes
+ * @param {string} key - La clé de la colonne à trier
+ * @param {boolean} sortable - Indique si la colonne est triable
+ */
 function onSort(key, sortable) {
   if (!sortable) return;
   if (props.sortBy === key) {
@@ -81,7 +91,6 @@ function onSort(key, sortable) {
 
 <template>
   <div class="overflow-x-auto">
-    <!-- Champ de recherche -->
     <div class="mb-4 ms-1 mt-1 flex justify-start">
       <input
         v-if="searchKey"
@@ -119,7 +128,6 @@ function onSort(key, sortable) {
     <div v-if="rows.length === 0" class="text-center py-4 text-gray-400">
       Aucun résultat à afficher, essayez d'attendre un instant.
     </div>
-    <!-- Pagination -->
     <div v-if="totalItems > itemsPerPage" class="flex justify-center items-center gap-2 mt-4">
       <button class="btn btn-sm" :disabled="page === 1" @click="changePage(page - 1)">Précédent</button>
       <span>Page {{ page }} / {{ totalPages }}</span>

@@ -21,6 +21,9 @@ const userCount = ref<number>(0);
 const globalRevenue = ref<number>(0);
 const yearlyRevenue = ref<Record<string, number>>({});
 
+/**
+ * Récupère le chiffre d'affaires global et par année.
+ */
 async function fetchRevenue() {
   const ordersWithDetails = await orderService.getOrdersWithDetails();
   let total = 0;

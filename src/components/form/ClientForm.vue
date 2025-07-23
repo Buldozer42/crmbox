@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { reactive, watch, toRefs } from "vue";
 import type Client from "@/models/Client";
-import type Address from "@/models/Address";
 
+// Définition des props
 const props = defineProps<{
   modelValue?: Partial<Client>;
   submitLabel?: string;
   showCancel?: boolean;
 }>();
+
+// Définition des émetteurs pour les événements
 const emit = defineEmits(["update:modelValue", "submit", "cancel"]);
 
+// Formulaire réactif
 const defaultAddress = () => ({ street: "", city: "", postalCode: "", country: "" });
 const form = reactive({
   lastname: "",
@@ -21,6 +24,7 @@ const form = reactive({
   billingAddress: defaultAddress(),
 });
 
+// Watcher pour mettre à jour le modèle de valeur
 watch(
   () => props.modelValue,
   (val) => {

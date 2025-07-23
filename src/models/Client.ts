@@ -12,6 +12,11 @@ class Client {
         public billingAddress: Address,
     ) {}
 
+
+    /**
+     * Retourne le nom complet du client
+     * @returns {string} Le nom complet du client
+     */
     get fullName(): string {
         return `${this.firstname} ${this.lastname}`;
     }

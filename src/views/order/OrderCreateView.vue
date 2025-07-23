@@ -26,12 +26,15 @@ onMounted(async () => {
   }
 })
 
+/**
+ *  Gère la soumission du formulaire de création de commande.
+ *  @param order - Les données de la commande à créer.
+ */
 async function handleSubmit(order: any) {
   loading.value = true
   error.value = ''
   try {
     const service = new OrderService()
-    // Création des orderedProducts
     const orderedProductUrls: string[] = []
     for (const item of order.orderedProducts) {
       const response = await fetch(`${service.apiUrl}/api/ordered_products`, {

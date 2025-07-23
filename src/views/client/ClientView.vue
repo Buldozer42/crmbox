@@ -44,7 +44,6 @@ async function fetchOrdersForClient(clientId: number) {
     const { data } = await orderService.getOrders({ 'client.id': clientId })
     orders.value = Array.isArray(data.member) ? data.member : []
   } catch (e) {
-    // On ignore l'erreur pour l'historique
     orders.value = []
   } finally {
     ordersLoading.value = false

@@ -3,8 +3,12 @@ import { ref, onMounted, watch } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { OrderService } from '@/services/OrderService';
 import { UserService } from '@/services/UserService';
+
+// Enregistre les composants de Chart.js
+// Permet d'utiliser les graphiques dans Vue.js
 Chart.register(...registerables);
 
+// Références pour les éléments canvas
 const chartRef = ref<HTMLCanvasElement | null>(null);
 const userPieRef = ref<HTMLCanvasElement | null>(null);
 const clientSalesRef = ref<HTMLCanvasElement | null>(null);
@@ -16,18 +20,26 @@ let chartInstance: Chart | null = null;
 let userPieInstance: Chart | null = null;
 let clientSalesInstance: Chart | null = null;
 
+/**
+ * Récupère les ventes par mois pour l'année sélectionnée.
+ * 
+ * @returns {Promise<{ labels: string[], doneArr: number[], ongoingArr: number[], cancelArr: number[] }>}
+ */
 async function getSalesByMonth() {
   // Récupère toutes les commandes
   const { data } = await orderService.getOrders();
   const orders = data["member"] || [];
+
   // Récupère toutes les années présentes dans les commandes
   const allYears = Array.from(new Set(orders.map((order: any) => Number(new Date(order.date).getFullYear())))).sort((a, b) => (a as number) - (b as number)).reverse();
   years.value = allYears as number[];
+  
   // Filtre les commandes par année sélectionnée
   const filteredOrders = orders.filter((order: any) => {
     const date = new Date(order.date);
     return date.getFullYear() === selectedYear.value;
   });
+  
   // Initialise les tableaux des ventes par mois pour chaque état
   const doneByMonth = Array(12).fill(0);
   const ongoingByMonth = Array(12).fill(0);
@@ -43,6 +55,7 @@ async function getSalesByMonth() {
       cancelByMonth[monthIndex]++;
     }
   });
+  
   // Labels des mois en français
   const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   return {
@@ -53,16 +66,22 @@ async function getSalesByMonth() {
   };
 }
 
-// Récupère le nombre de ventes par client
+/**
+ * Récupère les ventes par client pour l'année sélectionnée.
+ * 
+ * @returns {Promise<{ labels: string[], dataArr: number[], lastnames: string[] }>}
+ */
 async function getSalesByClient() {
+  // Récupère toutes les commandes avec les détails des clients
   const ordersWithDetails = await orderService.getOrdersWithDetails();
+  
   // Filtre par année sélectionnée
   const filteredOrders = ordersWithDetails.filter((item: any) => {
     const date = new Date(item.order.date);
     return date.getFullYear() === selectedYear.value;
   });
+
   // Compte le nombre de ventes par client
-  // On stocke aussi le lastname pour le tooltip
   const salesByClient: Record<string, { count: number, lastname: string }> = {};
   filteredOrders.forEach((item: any) => {
     const clientKey = item.client?.name || item.client?.id || 'Inconnu';
@@ -70,13 +89,23 @@ async function getSalesByClient() {
     if (!salesByClient[clientKey]) salesByClient[clientKey] = { count: 0, lastname };
     salesByClient[clientKey].count++;
   });
+  
+  // Transforme l'objet en tableau pour le graphique
   const labels = Object.keys(salesByClient);
   const dataArr = labels.map(key => salesByClient[key].count);
   const lastnames = labels.map(key => salesByClient[key].lastname);
   return { labels, dataArr, lastnames };
 }
+
+/**
+ * Affiche le graphique des ventes par mois.
+ * Récupère les données et crée le graphique avec Chart.js.
+ */
 async function renderChart() {
+  // Récupère les données des ventes par mois
   const { labels, doneArr, ongoingArr, cancelArr } = await getSalesByMonth();
+  
+  // Si le canvas est prêt, crée le graphique
   if (chartRef.value) {
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(chartRef.value, {
@@ -118,9 +147,15 @@ async function renderChart() {
   }
 }
 
-// Affiche le graphique du nombre de ventes par client
+/**
+ * Affiche le graphique des ventes par client.
+ * Récupère les données et crée le graphique avec Chart.js.
+ */
 async function renderClientSalesChart() {
+  // Récupère les données des ventes par client
   const { labels, dataArr, lastnames } = await getSalesByClient();
+  
+  // Si le canvas est prêt, crée le graphique
   if (clientSalesRef.value) {
     if (clientSalesInstance) clientSalesInstance.destroy();
     clientSalesInstance = new Chart(clientSalesRef.value, {
@@ -157,12 +192,21 @@ async function renderClientSalesChart() {
     });
   }
 }
+
+/**
+ * Affiche le graphique en camembert des utilisateurs confirmés / non confirmés.
+ * Récupère les données et crée le graphique avec Chart.js.
+ */
 async function renderUserPieChart() {
+  // Récupère les utilisateurs
   const usersRes: { data: any } = await userService.getUsers();
   const users = usersRes.data.member || usersRes.data || [];
-  // Supposons que users est un tableau d'objets avec une propriété "confirmed" (boolean)
+
+  // Compte le nombre d'utilisateurs confirmés et non confirmés
   const confirmed = users.filter((u: any) => u.confirmed).length;
   const notConfirmed = users.length - confirmed;
+
+  // Si le canvas est prêt, crée le graphique
   if (userPieRef.value) {
     if (userPieInstance) userPieInstance.destroy();
     userPieInstance = new Chart(userPieRef.value, {
@@ -195,6 +239,7 @@ async function renderUserPieChart() {
   }
 }
 
+// Au montage du composant, on initialise les graphiques
 onMounted(() => {
   renderChart();
   renderUserPieChart();

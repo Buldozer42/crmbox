@@ -4,6 +4,7 @@ import type Order from '@/models/Order'
 import type Client from '@/models/Client'
 import type Product from '@/models/Product'
 
+// Définition des propriétés du composant
 const props = defineProps<{
   order?: Order | null
   clients: Client[]
@@ -11,6 +12,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
+// Type pour le payload de la soumission du formulaire
 type OrderFormPayload = {
   id?: number;
   client: string;
@@ -31,10 +33,12 @@ type OrderFormPayload = {
   };
 };
 
+// Émission d'événements pour la soumission du formulaire
 const emit = defineEmits<{
   (e: 'submit', order: OrderFormPayload): void
 }>()
 
+// Références pour les champs du formulaire
 const clientId = ref(props.order?.client ? (typeof props.order.client === 'string' ? Number(props.order.client.match(/\/(\d+)$/)?.[1]) : props.order.client) : '')
 const orderedProducts = ref<Array<{ productId: number, quantity: number }>>(
   props.order?.orderedProducts?.map((item: any) => ({
@@ -48,12 +52,12 @@ const deliveryStreet = ref(props.order?.deliveryAddress?.street || '')
 const deliveryCity = ref(props.order?.deliveryAddress?.city || '')
 const deliveryPostalCode = ref(props.order?.deliveryAddress?.postalCode || '')
 const deliveryCountry = ref(props.order?.deliveryAddress?.country || '')
-
 const billingStreet = ref(props.order?.billingAddress?.street || '')
 const billingCity = ref(props.order?.billingAddress?.city || '')
 const billingPostalCode = ref(props.order?.billingAddress?.postalCode || '')
 const billingCountry = ref(props.order?.billingAddress?.country || '')
 
+// Watcher pour mettre à jour les champs du formulaire lorsque la commande change
 watch(() => props.order, (newOrder) => {
   clientId.value = newOrder?.client ? (typeof newOrder.client === 'string' ? Number(newOrder.client.match(/\/(\d+)$/)?.[1]) : newOrder.client) : ''
   orderedProducts.value = newOrder?.orderedProducts?.map((item: any) => ({
@@ -72,19 +76,38 @@ watch(() => props.order, (newOrder) => {
   billingCountry.value = newOrder?.billingAddress?.country || ''
 })
 
+/**
+ * Ajoute un produit à la liste des produits commandés.
+ * 
+ * @param {void}
+ * @returns {void}
+ */
 function addProduct() {
   orderedProducts.value.push({ productId: props.products[0]?.id || 0, quantity: 1 })
 }
 
+/**
+ * Supprime un produit de la liste des produits commandés.
+ * 
+ * @param {number} index - L'index du produit à supprimer.
+ * @returns {void}
+ */
 function removeProduct(index: number) {
   orderedProducts.value.splice(index, 1)
 }
 
+/**
+ * Gère la soumission du formulaire.
+ * Valide les champs requis et émet l'événement de soumission avec les données de la commande.
+ * 
+ * @returns {void}
+ */
 function handleSubmit() {
+  // Validation des champs requis
   if (!clientId.value || orderedProducts.value.length === 0) return
   if (!deliveryStreet.value.trim() || !billingStreet.value.trim()) return
 
-  // On émet les données brutes pour que la vue parent gère la création des orderedProducts
+  // Création de l'objet de données de la commande
   const orderData = {
     clientId: clientId.value,
     orderedProducts: orderedProducts.value.map(item => ({
@@ -106,6 +129,8 @@ function handleSubmit() {
       country: billingCountry.value
     }
   }
+  
+  // Émission de l'événement de soumission avec les données de la commande
   if (props.order && props.order.id) {
     emit('submit', { ...orderData, id: props.order.id })
   } else {

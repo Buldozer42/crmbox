@@ -50,7 +50,9 @@ onMounted(fetchProducts)
 
 watch([page, itemsPerPage, sortBy, sortDesc, search], fetchProducts, { immediate: true })
 
-// Fonction d'export CSV
+/**
+ * Traite l'export CSV des produits.
+ */
 async function handleExport() {
   const service = new ProductService();
   try {

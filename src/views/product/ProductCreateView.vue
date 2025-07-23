@@ -8,6 +8,10 @@ const router = useRouter()
 const loading = ref(false)
 const error = ref('')
 
+
+/**
+ * Traite la soumission du formulaire de création de produit.
+ */
 async function handleSubmit(product: any) {
   loading.value = true
   error.value = ''
