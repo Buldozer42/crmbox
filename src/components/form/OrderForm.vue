@@ -15,8 +15,8 @@ const props = defineProps<{
 // Type pour le payload de la soumission du formulaire
 type OrderFormPayload = {
   id?: number;
-  client: string;
-  orderedProducts: Array<{ product: string; quantity: number }>;
+  client:  number | string;
+  orderedProducts: Array<{ product: string | number; quantity: number }>;
   date: string;
   state: string;
   deliveryAddress: {
@@ -109,9 +109,9 @@ function handleSubmit() {
 
   // Création de l'objet de données de la commande
   const orderData = {
-    clientId: clientId.value,
+    client: clientId.value,
     orderedProducts: orderedProducts.value.map(item => ({
-      productId: item.productId,
+      product: item.productId,
       quantity: item.quantity
     })),
     date: date.value ? new Date(date.value).toISOString() : new Date().toISOString(),

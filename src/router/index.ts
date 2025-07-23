@@ -2,19 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthService from '@/services/AuthService'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/security/LoginView.vue'
-import ProductListView from '@/views/Product/ProductListView.vue'
-import ProductDetailView from '@/views/Product/ProductView.vue'
-import ProductCreateView from '@/views/Product/ProductCreateView.vue'
-import ProductEditView from '@/views/Product/ProductEditView.vue'
+import ProductListView from '@/views/product/ProductListView.vue'
+import ProductView from '@/views/product/ProductView.vue'
+import ProductCreateView from '@/views/product/ProductCreateView.vue'
+import ProductEditView from '@/views/product/ProductEditView.vue'
 import UserListView from '@/views/security/UserListView.vue'
-import ClientListView from '@/views/Client/ClientListView.vue'
+import ClientListView from '@/views/client/ClientListView.vue'
 import ClientView from '@/views/client/ClientView.vue'
 import ClientCreateView from '@/views/client/ClientCreateView.vue'
 import ClientEditView from '@/views/client/ClientEditView.vue'
-import OrderListView from '@/views/Order/OrderListView.vue'
-import OrderDetailView from '@/views/Order/OrderView.vue'
-import OrdeCreatelView from '@/views/Order/OrderCreateView.vue'
-import OrderEditView from '@/views/Order/OrderEditView.vue'
+import OrderListView from '@/views/order/OrderListView.vue'
+import OrderView from '@/views/order/OrderView.vue'
+import OrdeCreatelView from '@/views/order/OrderCreateView.vue'
+import OrderEditView from '@/views/order/OrderEditView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,7 +38,7 @@ const router = createRouter({
     {
       path: '/produits/:id',
       name: 'product-detail',
-      component: ProductDetailView,
+      component: ProductView,
       meta: {
         requiresAuth: true
       }
@@ -110,7 +110,7 @@ const router = createRouter({
     {
       path: '/commandes/:id',
       name: 'order-detail',
-      component: OrderDetailView,
+      component: OrderView,
       meta: {
         requiresAuth: true
       }

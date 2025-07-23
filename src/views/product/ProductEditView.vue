@@ -36,13 +36,16 @@ async function fetchProduct() {
  * 
  * @param updatedProduct - Le produit mis à jour à soumettre.
  */
-async function handleSubmit(updatedProduct: Product) {
+async function handleSubmit(updatedProduct: Product | Omit<Product, "id">) {
   loading.value = true
   error.value = ''
   try {
     const service = new ProductService()
-    await service.updateProduct(updatedProduct)
-    router.push({ name: 'product-detail', params: { id: updatedProduct.id } })
+    // Assure que l'id existe, sinon utilise celui du produit chargé
+    const productId = (updatedProduct as Product).id ?? product.value?.id
+    if (!productId) throw new Error('ID du produit manquant.')
+    await service.updateProduct({ ...updatedProduct, id: productId } as Product)
+    router.push({ name: 'product-detail', params: { id: productId } })
   } catch (e: any) {
     error.value = e.message || 'Erreur lors de la modification du produit.'
   } finally {

@@ -10,7 +10,7 @@ const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const error = ref('')
-const order = ref(null)
+const order = ref()
 const clients = ref([])
 const products = ref([])
 
@@ -35,7 +35,7 @@ onMounted(async () => {
           product: item.product.id,
           quantity: item.quantity
         })),
-        date: orderDetails.order.date ? orderDetails.order.date.split('T')[0] : '' // format yyyy-mm-dd
+        date: orderDetails.order.date ? new Date(orderDetails.order.date).toISOString().split('T')[0] : '' // format yyyy-mm-dd
       }
     }
   } catch (e: any) {

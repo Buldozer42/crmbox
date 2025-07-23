@@ -17,13 +17,19 @@ Installez les dépendances :
 npm install
 ```
 
-Lancez l'application :
+Lancez l'application, pour le mode développement :
 
 ```bash
-# Pour le développement
 npm run dev
-# Pour la production
+```
+
+Lancez l'application, pour le mode production :
+
+```bash
 npm run build
+serve dist
+# Si serve n'est pas installé, installez-le d'abord :
+npm install -g serve
 ```
 
 Cette application est accompagnée d'une API, que vous devrez également installer et configurer : [API](https://github.com/Buldozer42/crmbox-api)
