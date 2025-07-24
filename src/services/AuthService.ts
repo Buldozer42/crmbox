@@ -46,7 +46,8 @@ export class AuthService {
             const data: AuthResponse = await response.json();
             this.setToken(data.token);
             this.setRoles(data.roles);
-            
+            // Notifier l'application du changement d'authentification
+            window.dispatchEvent(new Event('auth-changed'));
             return true;
         } catch (error) {
             console.error('Erreur lors de la connexion:', error);
@@ -73,10 +74,11 @@ export class AuthService {
             const data: AuthResponse = await response.json();
             this.setToken(data.token);
             this.setRoles(data.roles);
-            
+            // Notifier l'application du changement d'authentification
+            window.dispatchEvent(new Event('auth-changed'));
             return true;
         } catch (error) {
-            console.error('Erreur lors de l\'enregistrement:', error);
+            console.error("Erreur lors de l'enregistrement:", error);
             return false;
         }
     }
@@ -87,6 +89,8 @@ export class AuthService {
     logout(): void {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem('auth_roles');
+        // Notifier l'application du changement d'authentification
+        window.dispatchEvent(new Event('auth-changed'));
     }
 
     /**
